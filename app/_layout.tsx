@@ -67,6 +67,14 @@ export default function RootLayout() {
             name="event/[id]"
             options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
           />
+          <Stack.Screen
+            name="exercise/[id]"
+            options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+          />
+          <Stack.Screen
+            name="workout/session"
+            options={{ animation: 'fade_from_bottom' }}
+          />
         </Stack>
       </View>
       <StatusBar style="light" />
