@@ -12,6 +12,10 @@ import {
   Archivo_900Black,
 } from '@expo-google-fonts/archivo';
 import {
+  Fraunces_500Medium,
+  Fraunces_700Bold,
+} from '@expo-google-fonts/fraunces';
+import {
   IBMPlexMono_600SemiBold,
   IBMPlexMono_700Bold,
 } from '@expo-google-fonts/ibm-plex-mono';
@@ -29,6 +33,8 @@ export default function RootLayout() {
     Archivo_500Medium,
     Archivo_700Bold,
     Archivo_900Black,
+    Fraunces_500Medium,
+    Fraunces_700Bold,
     IBMPlexMono_600SemiBold,
     IBMPlexMono_700Bold,
   });
