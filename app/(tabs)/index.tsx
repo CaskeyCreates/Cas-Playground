@@ -4,12 +4,13 @@ import { useMemo } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { CircleButton, DateStrip, Eyebrow, Hairline, Pill, Screen, Text } from '../../components/ui';
-import { EVENTS, getEventById } from '../../data/events';
+import { getEventById } from '../../data/events';
 import { SUPPS } from '../../data/meals';
-import { MACROS, PROFILE } from '../../data/profile';
-import { DAILY_QUESTS } from '../../data/quests';
+import { MACROS } from '../../data/profile';
 import { getTodayProgram } from '../../data/program';
+import { DAILY_QUESTS } from '../../data/quests';
 import { daysBetween, todayKey } from '../../lib/dates';
+import { getGreetingIcon, supplementMonograms } from '../../lib/icons';
 import { getLevel, getRank, levelProgress } from '../../lib/xp';
 import { selectTotalXP, useAppStore } from '../../store/useAppStore';
 import { colors, fonts, radius, space } from '../../theme';
@@ -125,9 +126,15 @@ export default function HomeScreen() {
 
       {/* Editorial hero */}
       <View style={styles.hero}>
-        <Text variant="nano" tone="faint" uppercase weight="bold">
-          {greetingByHour(today.getHours())}
-        </Text>
+        <View style={styles.greetingRow}>
+          {(() => {
+            const GreetIcon = getGreetingIcon(today.getHours());
+            return <GreetIcon size={14} color={colors.textFaint} strokeWidth={1.5} />;
+          })()}
+          <Text variant="nano" tone="faint" uppercase weight="bold">
+            {greetingByHour(today.getHours())}
+          </Text>
+        </View>
         <Text variant="hero" style={styles.heroQuote} weight="regular">
           {line.text}
         </Text>
@@ -289,6 +296,7 @@ export default function HomeScreen() {
       >
         {SUPPS.map((s, i) => {
           const taken = !!suppsToday[i];
+          const mono = supplementMonograms[s.n] ?? s.n.slice(0, 3).toUpperCase();
           return (
             <TouchableOpacity
               key={i}
@@ -296,17 +304,21 @@ export default function HomeScreen() {
               activeOpacity={0.7}
               style={[styles.suppChip, taken && styles.suppChipOn]}
             >
-              <Text variant="bodySm" style={styles.suppEmoji}>
-                {s.icon}
+              <Text
+                variant="heading"
+                family="serif"
+                tone={taken ? 'default' : 'faint'}
+                weight={taken ? 'bold' : 'regular'}
+              >
+                {mono}
               </Text>
               <Text
                 variant="nano"
-                tone={taken ? 'default' : 'faint'}
+                tone={taken ? 'muted' : 'ghost'}
                 uppercase
-                weight={taken ? 'bold' : 'regular'}
-                style={{ marginTop: 4 }}
+                style={{ marginTop: 6 }}
               >
-                {taken ? 'Taken' : 'Tap'}
+                {taken ? 'Taken' : s.t.split(' ')[0]}
               </Text>
             </TouchableOpacity>
           );
@@ -406,6 +418,11 @@ const styles = StyleSheet.create({
     paddingTop: space.xxl,
     paddingBottom: space.lg,
   },
+  greetingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   heroQuote: {
     marginTop: space.lg,
     color: colors.text,
@@ -471,8 +488,8 @@ const styles = StyleSheet.create({
     paddingRight: space.xl,
   },
   suppChip: {
-    width: 72,
-    height: 72,
+    width: 76,
+    height: 76,
     borderRadius: radius.md,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.hairline,
@@ -480,11 +497,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   suppChipOn: {
-    backgroundColor: colors.accentBg,
-    borderColor: colors.accentBorder,
-  },
-  suppEmoji: {
-    fontSize: 22,
+    backgroundColor: colors.bgLift,
+    borderColor: colors.text,
   },
   checkinCard: {
     flexDirection: 'row',

@@ -4,5 +4,7 @@ export { Eyebrow } from './Eyebrow';
 export { Hairline } from './Hairline';
 export { HeroCard } from './HeroCard';
 export { Pill } from './Pill';
+export { QuestRow } from './QuestRow';
+export { RankListRow } from './RankListRow';
 export { Screen } from './Screen';
 export { Text } from './Text';

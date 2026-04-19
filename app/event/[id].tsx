@@ -1,13 +1,14 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ArrowLeft } from 'lucide-react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '../../components/Button';
+import { Eyebrow, Hairline, Text } from '../../components/ui';
 import { getEventById } from '../../data/events';
 import { daysBetween } from '../../lib/dates';
 import { calculateReadiness } from '../../lib/readiness';
 import { useAppStore } from '../../store/useAppStore';
-import { colors, fonts, radius, space } from '../../theme';
+import { colors, space } from '../../theme';
 
 export default function EventDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -18,13 +19,11 @@ export default function EventDetail() {
 
   if (!event) {
     return (
-      <SafeAreaView style={styles.safe}>
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.back} onPress={() => router.back()}>
-            <Text style={styles.backText}>← Back</Text>
-          </TouchableOpacity>
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        <BackBar onBack={() => router.back()} />
+        <View style={{ padding: space.xxl }}>
+          <Text tone="muted">Event not found.</Text>
         </View>
-        <Text style={styles.missing}>Event not found.</Text>
       </SafeAreaView>
     );
   }
@@ -43,149 +42,309 @@ export default function EventDetail() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.back} onPress={() => router.back()}>
-          <Text style={styles.backText}>← Back</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={[styles.hero, { borderColor: event.color }]}>
-        <Text style={styles.heroIcon}>{event.icon}</Text>
-        <Text style={[styles.boss, { color: event.color, borderColor: event.color }]}>
-          {event.bossLevel}
-        </Text>
-        <Text style={styles.name}>{event.name}</Text>
-        <Text style={styles.type}>
-          {event.type} • {event.distance}
-        </Text>
-        <View style={styles.countdown}>
-          <Text style={[styles.daysNum, { color: event.color }]}>{days}</Text>
-          <Text style={styles.daysLbl}>DAYS UNTIL BATTLE</Text>
+      <BackBar onBack={() => router.back()} />
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
+      >
+        {/* Editorial hero */}
+        <View style={styles.hero}>
+          <Text variant="nano" tone="faint" uppercase weight="bold">
+            {event.bossLevel}
+          </Text>
+          <Text
+            variant="hero"
+            family="serif"
+            weight="regular"
+            style={{ marginTop: space.md }}
+          >
+            {event.name}
+          </Text>
+          <Text variant="bodySm" tone="muted" style={{ marginTop: space.sm }}>
+            {event.type} · {event.distance}
+          </Text>
         </View>
-      </View>
 
-      <View style={styles.readiness}>
-        <Text style={styles.sectionTitle}>AI READINESS</Text>
-        <Text style={[styles.verdict, { color: readiness.color }]}>
-          {readiness.total}% — {readiness.verdict}
-        </Text>
-        <Text style={styles.rec}>{readiness.recommendation}</Text>
-      </View>
+        <Hairline />
 
-      <View style={styles.actions}>
-        <Button
-          label={isActive ? '⊗ ABANDON QUEST' : '⚔️ ACCEPT QUEST'}
+        {/* Countdown + date */}
+        <View style={styles.metaRow}>
+          <View style={styles.metaCol}>
+            <Text variant="nano" tone="faint" uppercase weight="bold">
+              Days out
+            </Text>
+            <Text
+              variant="display"
+              family="serif"
+              weight="regular"
+              style={{ marginTop: space.xs }}
+            >
+              {days}
+            </Text>
+          </View>
+          <View style={styles.metaCol}>
+            <Text variant="nano" tone="faint" uppercase weight="bold">
+              Difficulty
+            </Text>
+            <Text
+              variant="display"
+              family="serif"
+              weight="regular"
+              style={{ marginTop: space.xs }}
+            >
+              {event.difficulty}
+              <Text variant="display" tone="faint" family="serif">
+                /10
+              </Text>
+            </Text>
+          </View>
+        </View>
+
+        <Hairline />
+        <View style={styles.detailRow}>
+          <Text variant="nano" tone="faint" uppercase weight="bold">
+            Date
+          </Text>
+          <Text variant="body" tone="default">
+            {new Date(event.date).toLocaleDateString('en-GB', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
+          </Text>
+        </View>
+        <Hairline dim />
+        <View style={styles.detailRow}>
+          <Text variant="nano" tone="faint" uppercase weight="bold">
+            Location
+          </Text>
+          <Text
+            variant="body"
+            tone="default"
+            style={{ textAlign: 'right', flex: 1, marginLeft: space.xl }}
+          >
+            {event.location}
+          </Text>
+        </View>
+        <Hairline dim />
+        <View style={styles.detailRow}>
+          <Text variant="nano" tone="faint" uppercase weight="bold">
+            Prep
+          </Text>
+          <Text variant="body" tone="default">
+            {event.prepWeeks} weeks · min {event.minPrepWeeks}
+          </Text>
+        </View>
+        <Hairline dim />
+
+        {/* Readiness */}
+        <Eyebrow label="Readiness" />
+        <Hairline dim />
+        <View style={styles.readiness}>
+          <Text
+            variant="hero"
+            family="serif"
+            weight="regular"
+            tone={readiness.total >= 50 ? 'default' : 'muted'}
+          >
+            {readiness.total}
+            <Text variant="title" family="serif" tone="faint">
+              /100
+            </Text>
+          </Text>
+          <Text
+            variant="micro"
+            uppercase
+            weight="bold"
+            tone="muted"
+            style={{ marginTop: space.md, letterSpacing: 2 }}
+          >
+            {readiness.verdict}
+          </Text>
+          <Text
+            variant="bodySm"
+            tone="muted"
+            style={{ marginTop: space.lg, lineHeight: 20 }}
+          >
+            {readiness.recommendation}
+          </Text>
+        </View>
+        <Hairline dim />
+
+        {/* Readiness breakdown */}
+        <ScoreRow label="Time available" value={readiness.timeScore} />
+        <ScoreRow label="Consistency" value={readiness.consistencyScore} />
+        <ScoreRow label="Body composition" value={readiness.fitnessScore} />
+        <ScoreRow label="Strength" value={readiness.strengthScore} />
+
+        {/* Description */}
+        <Eyebrow label="About" />
+        <Hairline dim />
+        <View style={styles.descBlock}>
+          <Text variant="body" tone="muted" style={{ lineHeight: 22 }}>
+            {event.description}
+          </Text>
+        </View>
+
+        {/* Prerequisites */}
+        <Eyebrow label="Prerequisites" />
+        <Hairline dim />
+        <PrereqRow label="Cardio" value={event.requirements.cardio} />
+        <PrereqRow label="Strength" value={event.requirements.strength} />
+        <PrereqRow label="Experience" value={event.requirements.experience} />
+
+        <View style={{ height: space.xxxl }} />
+      </ScrollView>
+
+      {/* Action */}
+      <View style={styles.actionBar}>
+        <TouchableOpacity
+          style={[styles.action, isActive ? styles.actionAbandon : styles.actionAccept]}
           onPress={toggle}
-          style={{ backgroundColor: isActive ? colors.red : event.color }}
-        />
+          activeOpacity={0.85}
+        >
+          <Text
+            variant="body"
+            weight="bold"
+            uppercase
+            tone={isActive ? 'default' : 'default'}
+            style={{
+              color: isActive ? colors.text : colors.bg,
+              letterSpacing: 2,
+            }}
+          >
+            {isActive ? 'Abandon quest' : 'Accept quest'}
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
 
+const BackBar = ({ onBack }: { onBack: () => void }) => (
+  <View style={styles.backBar}>
+    <TouchableOpacity onPress={onBack} activeOpacity={0.7} style={styles.backBtn}>
+      <ArrowLeft size={20} color={colors.text} strokeWidth={1.5} />
+    </TouchableOpacity>
+  </View>
+);
+
+const ScoreRow = ({ label, value }: { label: string; value: number }) => (
+  <>
+    <View style={styles.scoreRow}>
+      <Text variant="bodySm" tone="muted" style={{ flex: 1 }}>
+        {label}
+      </Text>
+      <View style={styles.scoreBar}>
+        <View style={[styles.scoreFill, { width: `${value}%` }]} />
+      </View>
+      <Text
+        variant="bodySm"
+        tone="default"
+        family="mono"
+        weight="bold"
+        style={{ width: 44, textAlign: 'right' }}
+      >
+        {value}
+      </Text>
+    </View>
+    <Hairline dim />
+  </>
+);
+
+const PrereqRow = ({ label, value }: { label: string; value: string }) => (
+  <>
+    <View style={styles.prereqBlock}>
+      <Text variant="nano" tone="faint" uppercase weight="bold">
+        {label}
+      </Text>
+      <Text variant="body" tone="muted" style={{ marginTop: space.xs }}>
+        {value}
+      </Text>
+    </View>
+    <Hairline dim />
+  </>
+);
+
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
-  header: { paddingHorizontal: space.xxl, paddingVertical: 14 },
-  back: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.bgSurfaceHi,
-    borderRadius: radius.md,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: colors.borderHover,
+  backBar: {
+    paddingHorizontal: space.xl,
+    paddingVertical: space.md,
   },
-  backText: {
-    color: colors.textMuted,
-    fontSize: 12,
-    fontFamily: fonts.bodyBold,
+  backBtn: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
-  missing: {
-    color: colors.textFaint,
-    textAlign: 'center',
-    marginTop: 40,
-    fontFamily: fonts.body,
+  content: {
+    paddingHorizontal: space.xl,
+    paddingBottom: 100,
   },
   hero: {
-    marginHorizontal: space.xxl,
-    marginTop: space.xxl,
-    borderRadius: 20,
-    padding: 24,
+    paddingVertical: space.xxl,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    paddingVertical: space.xl,
+    gap: space.xxxl,
+  },
+  metaCol: { flex: 1 },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    borderWidth: 1,
-    backgroundColor: colors.bgSurface,
-  },
-  heroIcon: { fontSize: 42, marginBottom: 10 },
-  boss: {
-    fontSize: 9,
-    fontFamily: fonts.monoBold,
-    letterSpacing: 2,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 6,
-    borderWidth: 1,
-    marginBottom: 10,
-  },
-  name: {
-    fontSize: 24,
-    fontFamily: fonts.displayBlack,
-    color: colors.text,
-    letterSpacing: -0.5,
-  },
-  type: {
-    fontSize: 11,
-    color: colors.textDim,
-    fontFamily: fonts.bodyBold,
-    marginBottom: 14,
-  },
-  countdown: {
-    alignItems: 'center',
-    paddingTop: 14,
-    borderTopWidth: 1,
-    borderTopColor: colors.borderHi,
-    width: '100%',
-  },
-  daysNum: {
-    fontSize: 48,
-    fontFamily: fonts.monoBold,
-    letterSpacing: -2,
-    lineHeight: 50,
-  },
-  daysLbl: {
-    fontSize: 9,
-    fontFamily: fonts.displayBlack,
-    letterSpacing: 2,
-    marginTop: 4,
-    color: colors.textFaint,
+    paddingVertical: space.lg,
   },
   readiness: {
-    marginHorizontal: space.xxl,
-    marginTop: space.xxl,
-    padding: 16,
-    borderRadius: radius.lg,
-    backgroundColor: colors.bgSurface,
-    borderWidth: 1,
-    borderColor: colors.border,
+    paddingVertical: space.xl,
   },
-  sectionTitle: {
-    fontSize: 10,
-    fontFamily: fonts.monoBold,
-    color: colors.textDim,
-    letterSpacing: 1.5,
-    marginBottom: 10,
+  scoreRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: space.md,
+    gap: space.lg,
   },
-  verdict: {
-    fontSize: 16,
-    fontFamily: fonts.displayBlack,
-    marginBottom: 8,
+  scoreBar: {
+    flex: 1.5,
+    height: 2,
+    backgroundColor: colors.hairline,
   },
-  rec: {
-    fontSize: 12,
-    color: colors.textMuted,
-    lineHeight: 18,
-    fontFamily: fonts.body,
+  scoreFill: {
+    height: 2,
+    backgroundColor: colors.text,
   },
-  actions: {
-    padding: space.xxl,
-    marginTop: 'auto',
+  descBlock: {
+    paddingVertical: space.lg,
+  },
+  prereqBlock: {
+    paddingVertical: space.md,
+  },
+  actionBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: space.xl,
+    paddingBottom: space.xxl,
+    backgroundColor: colors.bg,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.hairline,
+  },
+  action: {
+    paddingVertical: space.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 4,
+  },
+  actionAccept: {
+    backgroundColor: colors.text,
+  },
+  actionAbandon: {
+    backgroundColor: colors.bg,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.hairline,
   },
 });
