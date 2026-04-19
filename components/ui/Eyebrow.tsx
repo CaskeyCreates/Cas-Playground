@@ -24,7 +24,12 @@ export const Eyebrow = ({ label, right, accent }: Props) => (
             { backgroundColor: accent ? colors.accent : colors.textFaint },
           ]}
         />
-        <Text variant="eyebrow" tone="muted" uppercase weight="bold">
+        <Text
+          variant="eyebrow"
+          tone={accent ? 'accent' : 'muted'}
+          uppercase
+          weight="bold"
+        >
           {label}
         </Text>
       </View>

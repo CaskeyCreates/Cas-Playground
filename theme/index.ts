@@ -56,6 +56,16 @@ export const colors = {
   tagFailure: '#ef4444',
   tagFailureBg: 'rgba(239,68,68,0.15)',
 
+  // Inverse palette — used on white "focal" cards.
+  // Black-on-white sections for dramatic section alternation.
+  invBg: '#ffffff',
+  invText: '#000000',
+  invTextMuted: 'rgba(0,0,0,0.65)',
+  invTextDim: 'rgba(0,0,0,0.45)',
+  invTextFaint: 'rgba(0,0,0,0.30)',
+  invTextGhost: 'rgba(0,0,0,0.18)',
+  invHairline: 'rgba(0,0,0,0.10)',
+
   // legacy aliases — kept for screens not yet rewritten.
   // Remove these once all tabs adopt the new editorial system.
   bgSurface: 'rgba(255,255,255,0.02)',

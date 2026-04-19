@@ -2,7 +2,12 @@ import * as Haptics from 'expo-haptics';
 import { Check } from 'lucide-react-native';
 import { Platform, StyleSheet, TextInput, View } from 'react-native';
 import type { LucideIcon } from 'lucide-react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { colors, radius, space } from '../../theme';
 import { Hairline } from './Hairline';
@@ -38,18 +43,20 @@ export const QuestRow = ({
 }: Props) => {
   const wasDone = useSharedValue(done ? 1 : 0);
 
+  const timing = { duration: 260, easing: Easing.out(Easing.cubic) };
+
   const handleInputChange = (v: string) => {
     const num = Number(v);
     const complete = !Number.isNaN(num) && target !== undefined && num >= target;
     if (complete && !done && Platform.OS !== 'web') {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
-    wasDone.value = withSpring(complete ? 1 : 0, { damping: 14 });
+    wasDone.value = withTiming(complete ? 1 : 0, timing);
     onChange(v, complete);
   };
 
   const handleCheckToggle = () => {
-    wasDone.value = withSpring(done ? 0 : 1, { damping: 14 });
+    wasDone.value = withTiming(done ? 0 : 1, timing);
     onChange('1', !done);
   };
 

@@ -5,10 +5,8 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 
 import {
   AnimatedSection,
-  CircleButton,
   DateStrip,
   Eyebrow,
-  Hairline,
   Pill,
   Screen,
   TapScale,
@@ -124,8 +122,19 @@ export default function HomeScreen() {
       <AnimatedSection delay={80}>
         <View style={styles.hero}>
           <View style={styles.greetingRow}>
-            <GreetIcon size={14} color={colors.textFaint} strokeWidth={1.5} />
-            <Text variant="nano" tone="faint" uppercase weight="bold">
+            <GreetIcon
+              size={14}
+              color={
+                today.getHours() < 12 ? colors.accent : colors.textFaint
+              }
+              strokeWidth={1.5}
+            />
+            <Text
+              variant="nano"
+              tone={today.getHours() < 12 ? 'accent' : 'faint'}
+              uppercase
+              weight="bold"
+            >
               {greetingByHour(today.getHours())}
             </Text>
           </View>
@@ -184,7 +193,7 @@ export default function HomeScreen() {
         </View>
       </AnimatedSection>
 
-      {/* ACTIVE QUEST — only if one set */}
+      {/* ACTIVE QUEST — only if one set. Inverse: white bg, black text. */}
       {activeEvent && eventDaysUntil !== null ? (
         <AnimatedSection delay={220}>
           <Eyebrow label="Active Quest" accent />
@@ -193,17 +202,22 @@ export default function HomeScreen() {
             haptic="light"
             scaleTo={0.98}
           >
-            <View style={styles.focalCard}>
+            <View style={styles.invCard}>
               <View style={styles.questTop}>
-                <View>
-                  <Text variant="micro" tone="dim" uppercase weight="bold">
+                <View style={{ flex: 1 }}>
+                  <Text
+                    variant="nano"
+                    uppercase
+                    weight="bold"
+                    style={{ color: colors.invTextFaint, letterSpacing: 2 }}
+                  >
                     {activeEvent.bossLevel}
                   </Text>
                   <Text
                     variant="title"
-                    style={styles.questName}
-                    weight="regular"
                     family="serif"
+                    weight="regular"
+                    style={{ color: colors.invText, marginTop: space.xs, maxWidth: '90%' }}
                   >
                     {activeEvent.name}
                   </Text>
@@ -213,21 +227,27 @@ export default function HomeScreen() {
                     variant="display"
                     family="serif"
                     weight="regular"
-                    tone="accent"
+                    style={{ color: colors.invText }}
                   >
                     {eventDaysUntil}
                   </Text>
-                  <Text variant="nano" tone="dim" uppercase>
+                  <Text
+                    variant="nano"
+                    uppercase
+                    style={{ color: colors.invTextDim }}
+                  >
                     days out
                   </Text>
                 </View>
               </View>
-              <Hairline dim style={{ marginVertical: space.md }} />
+              <View style={[styles.invHairline, { marginVertical: space.md }]} />
               <View style={styles.questBottom}>
-                <Text variant="bodySm" tone="muted">
+                <Text variant="bodySm" style={{ color: colors.invTextMuted, flex: 1 }}>
                   {activeEvent.distance} · {activeEvent.location}
                 </Text>
-                <ArrowUpRight size={16} color={colors.textFaint} strokeWidth={1.5} />
+                <View style={styles.invArrow}>
+                  <ArrowUpRight size={14} color={colors.text} strokeWidth={2} />
+                </View>
               </View>
             </View>
           </TapScale>
@@ -250,10 +270,15 @@ export default function HomeScreen() {
           haptic="light"
           scaleTo={0.98}
         >
-          <View style={styles.focalCard}>
+          <View style={styles.invCard}>
             <View style={styles.sessionInner}>
               <View style={{ flex: 1 }}>
-                <Text variant="micro" tone="dim" uppercase weight="bold">
+                <Text
+                  variant="nano"
+                  uppercase
+                  weight="bold"
+                  style={{ color: colors.invTextFaint, letterSpacing: 2 }}
+                >
                   {todayProgram.type === 'lift'
                     ? 'Strength'
                     : todayProgram.type === 'cardio'
@@ -262,34 +287,39 @@ export default function HomeScreen() {
                 </Text>
                 <Text
                   variant="display"
-                  style={styles.sessionFocus}
                   family="serif"
                   weight="regular"
+                  style={[styles.sessionFocus, { color: colors.invText }]}
                 >
                   {todayProgram.focus}
                 </Text>
                 {todayProgram.exIds.length > 0 ? (
                   <Text
                     variant="bodySm"
-                    tone="muted"
-                    style={{ marginTop: space.md }}
+                    style={{
+                      color: colors.invTextMuted,
+                      marginTop: space.md,
+                    }}
                   >
-                    {todayProgram.exIds.length} movements · {estimateDuration(todayProgram)}
+                    {todayProgram.exIds.length} movements ·{' '}
+                    {estimateDuration(todayProgram)}
                   </Text>
                 ) : (
-                  <Text variant="bodySm" tone="muted" style={{ marginTop: space.md }}>
+                  <Text
+                    variant="bodySm"
+                    style={{
+                      color: colors.invTextMuted,
+                      marginTop: space.md,
+                    }}
+                  >
                     Walk, stretch, hydrate.
                   </Text>
                 )}
               </View>
               {todayProgram.exIds.length > 0 ? (
-                <CircleButton
-                  variant="accent"
-                  size="md"
-                  onPress={() => router.push('/train')}
-                >
-                  <ArrowUpRight size={18} color={colors.bg} strokeWidth={2.5} />
-                </CircleButton>
+                <View style={styles.invCtaCircle}>
+                  <ArrowUpRight size={18} color={colors.invBg} strokeWidth={2.5} />
+                </View>
               ) : null}
             </View>
           </View>
@@ -487,6 +517,32 @@ const styles = StyleSheet.create({
     padding: space.xl,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.hairline,
+  },
+  invCard: {
+    backgroundColor: colors.invBg,
+    borderRadius: radius.lg,
+    padding: space.xl,
+  },
+  invHairline: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.invHairline,
+    width: '100%',
+  },
+  invArrow: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.invText,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  invCtaCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.invText,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   questTop: {
     flexDirection: 'row',

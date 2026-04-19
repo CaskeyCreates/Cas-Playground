@@ -1,26 +1,27 @@
 import { ReactNode } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, { Easing, FadeInDown } from 'react-native-reanimated';
 
 type Props = {
   children: ReactNode;
   delay?: number;
   duration?: number;
-  distance?: number;
   style?: StyleProp<ViewStyle>;
 };
 
-// Wraps a section with a subtle fade-in-from-below entry animation.
-// Stagger via the `delay` prop so sections appear in sequence.
+// Smooth, eased fade-from-below entrance. No spring, no bounce.
+// The easing curve is ease-out-expo — slow deceleration at the end,
+// which reads as "premium" in motion design.
 export const AnimatedSection = ({
   children,
   delay = 0,
-  duration = 400,
-  distance = 16,
+  duration = 700,
   style,
 }: Props) => (
   <Animated.View
-    entering={FadeInDown.duration(duration).delay(delay).springify().damping(14)}
+    entering={FadeInDown.duration(duration)
+      .delay(delay)
+      .easing(Easing.out(Easing.exp))}
     style={style}
   >
     {children}

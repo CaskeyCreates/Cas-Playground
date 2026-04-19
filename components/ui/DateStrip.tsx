@@ -26,7 +26,7 @@ export const DateStrip = ({ activeDayOfWeek, onSelect }: Props) => (
         >
           <Text
             variant="bodySm"
-            tone={active ? 'default' : 'faint'}
+            tone={active ? 'accent' : 'faint'}
             weight={active ? 'bold' : 'regular'}
             style={styles.label}
           >
@@ -55,8 +55,9 @@ const styles = StyleSheet.create({
   },
   underline: {
     marginTop: 4,
-    height: 1,
+    height: 2,
     width: 10,
-    backgroundColor: colors.text,
+    borderRadius: 1,
+    backgroundColor: colors.accent,
   },
 });

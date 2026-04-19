@@ -20,10 +20,11 @@ const TabIcon = ({ Icon, label, focused }: TabIconProps) => (
   <View style={styles.tabItem}>
     <Icon
       size={22}
-      color={focused ? colors.text : colors.textFaint}
+      color={focused ? colors.accent : colors.textFaint}
       strokeWidth={1.5}
     />
     {focused ? <Text style={styles.label}>{label}</Text> : null}
+    {focused ? <View style={styles.activeDot} /> : null}
   </View>
 );
 
@@ -84,13 +85,20 @@ const styles = StyleSheet.create({
   tabItem: {
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
+    gap: 3,
     width: 64,
   },
   label: {
     fontSize: 9,
-    color: colors.text,
+    color: colors.accent,
     fontFamily: fonts.sansBold,
     letterSpacing: 1.5,
+  },
+  activeDot: {
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+    backgroundColor: colors.accent,
+    marginTop: 2,
   },
 });

@@ -2,9 +2,10 @@ import * as Haptics from 'expo-haptics';
 import { ReactNode } from 'react';
 import { Platform, Pressable, StyleProp, ViewStyle } from 'react-native';
 import Animated, {
+  Easing,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 
 type HapticKind = 'light' | 'medium' | 'selection' | 'success' | 'none';
@@ -50,6 +51,9 @@ export const TapScale = ({
     transform: [{ scale: scale.value }],
   }));
 
+  const pressTiming = { duration: 120, easing: Easing.out(Easing.cubic) };
+  const releaseTiming = { duration: 180, easing: Easing.out(Easing.cubic) };
+
   return (
     <Pressable
       onPress={() => {
@@ -57,10 +61,10 @@ export const TapScale = ({
         onPress?.();
       }}
       onPressIn={() => {
-        scale.value = withSpring(scaleTo, { damping: 18, stiffness: 300 });
+        scale.value = withTiming(scaleTo, pressTiming);
       }}
       onPressOut={() => {
-        scale.value = withSpring(1, { damping: 18, stiffness: 300 });
+        scale.value = withTiming(1, releaseTiming);
       }}
       disabled={disabled}
     >
