@@ -8,6 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "preview": "expo export --platform web && npx --yes serve dist -p 3000",
+    "deploy": "bash scripts/deploy-pages.sh",
     "typecheck": "tsc --noEmit",
     "lint": "expo lint"
   },
