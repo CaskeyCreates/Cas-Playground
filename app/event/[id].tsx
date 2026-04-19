@@ -3,7 +3,7 @@ import { ArrowLeft } from 'lucide-react-native';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Eyebrow, Hairline, Text } from '../../components/ui';
+import { Eyebrow, Hairline, TapScale, Text } from '../../components/ui';
 import { getEventById } from '../../data/events';
 import { daysBetween } from '../../lib/dates';
 import { calculateReadiness } from '../../lib/readiness';
@@ -199,24 +199,27 @@ export default function EventDetail() {
 
       {/* Action */}
       <View style={styles.actionBar}>
-        <TouchableOpacity
-          style={[styles.action, isActive ? styles.actionAbandon : styles.actionAccept]}
+        <TapScale
           onPress={toggle}
-          activeOpacity={0.85}
+          haptic={isActive ? 'medium' : 'success'}
+          scaleTo={0.97}
         >
-          <Text
-            variant="body"
-            weight="bold"
-            uppercase
-            tone={isActive ? 'default' : 'default'}
-            style={{
-              color: isActive ? colors.text : colors.bg,
-              letterSpacing: 2,
-            }}
+          <View
+            style={[styles.action, isActive ? styles.actionAbandon : styles.actionAccept]}
           >
-            {isActive ? 'Abandon quest' : 'Accept quest'}
-          </Text>
-        </TouchableOpacity>
+            <Text
+              variant="body"
+              weight="bold"
+              uppercase
+              style={{
+                color: isActive ? colors.text : colors.bg,
+                letterSpacing: 2,
+              }}
+            >
+              {isActive ? 'Abandon quest' : 'Accept quest'}
+            </Text>
+          </View>
+        </TapScale>
       </View>
     </SafeAreaView>
   );
@@ -340,7 +343,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   actionAccept: {
-    backgroundColor: colors.text,
+    backgroundColor: colors.accent,
   },
   actionAbandon: {
     backgroundColor: colors.bg,

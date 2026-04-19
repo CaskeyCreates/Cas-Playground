@@ -1,3 +1,4 @@
+export { AnimatedSection } from './AnimatedSection';
 export { CircleButton } from './CircleButton';
 export { DateStrip } from './DateStrip';
 export { Eyebrow } from './Eyebrow';
@@ -7,4 +8,5 @@ export { Pill } from './Pill';
 export { QuestRow } from './QuestRow';
 export { RankListRow } from './RankListRow';
 export { Screen } from './Screen';
+export { TapScale } from './TapScale';
 export { Text } from './Text';

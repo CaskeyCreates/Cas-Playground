@@ -1,22 +1,33 @@
 import { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { space } from '../../theme';
+import { colors, space } from '../../theme';
 import { Hairline } from './Hairline';
 import { Text } from './Text';
 
 type Props = {
   label: string;
   right?: ReactNode;
+  accent?: boolean;
 };
 
-export const Eyebrow = ({ label, right }: Props) => (
+// Section header: hairline → small accent dot + uppercase label → content.
+// `accent` flips the marker dot to yellow for "important" sections.
+export const Eyebrow = ({ label, right, accent }: Props) => (
   <View style={styles.wrap}>
     <Hairline />
     <View style={styles.row}>
-      <Text variant="eyebrow" tone="muted" uppercase weight="bold">
-        {label}
-      </Text>
+      <View style={styles.left}>
+        <View
+          style={[
+            styles.dot,
+            { backgroundColor: accent ? colors.accent : colors.textFaint },
+          ]}
+        />
+        <Text variant="eyebrow" tone="muted" uppercase weight="bold">
+          {label}
+        </Text>
+      </View>
       {right ?? null}
     </View>
   </View>
@@ -24,7 +35,7 @@ export const Eyebrow = ({ label, right }: Props) => (
 
 const styles = StyleSheet.create({
   wrap: {
-    marginTop: space.xxxl,
+    marginTop: space.section,
     marginBottom: space.lg,
   },
   row: {
@@ -32,5 +43,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: space.lg,
+  },
+  left: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.sm,
+  },
+  dot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
   },
 });

@@ -1,9 +1,12 @@
+import * as Haptics from 'expo-haptics';
 import { Check } from 'lucide-react-native';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, TextInput, View } from 'react-native';
 import type { LucideIcon } from 'lucide-react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { colors, radius, space } from '../../theme';
 import { Hairline } from './Hairline';
+import { TapScale } from './TapScale';
 import { Text } from './Text';
 
 type Props = {
@@ -20,6 +23,7 @@ type Props = {
 };
 
 // Editorial quest row — hairline separated, no card, pure typography.
+// Accent yellow marks the "done" state on the check / input value.
 export const QuestRow = ({
   Icon,
   name,
@@ -32,15 +36,26 @@ export const QuestRow = ({
   onChange,
   target,
 }: Props) => {
+  const wasDone = useSharedValue(done ? 1 : 0);
+
   const handleInputChange = (v: string) => {
     const num = Number(v);
     const complete = !Number.isNaN(num) && target !== undefined && num >= target;
+    if (complete && !done && Platform.OS !== 'web') {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+    wasDone.value = withSpring(complete ? 1 : 0, { damping: 14 });
     onChange(v, complete);
   };
 
   const handleCheckToggle = () => {
+    wasDone.value = withSpring(done ? 0 : 1, { damping: 14 });
     onChange('1', !done);
   };
+
+  const checkAnimated = useAnimatedStyle(() => ({
+    transform: [{ scale: 1 + wasDone.value * 0.05 }],
+  }));
 
   return (
     <>
@@ -48,7 +63,7 @@ export const QuestRow = ({
         <View style={styles.iconWrap}>
           <Icon
             size={18}
-            color={done ? colors.text : colors.textFaint}
+            color={done ? colors.accent : colors.textFaint}
             strokeWidth={1.5}
           />
         </View>
@@ -78,19 +93,26 @@ export const QuestRow = ({
                 onChangeText={handleInputChange}
               />
               {unit ? (
-                <Text variant="nano" tone="faint" uppercase>
+                <Text
+                  variant="nano"
+                  tone={done ? 'accent' : 'faint'}
+                  uppercase
+                  weight={done ? 'bold' : 'regular'}
+                >
                   {unit}
                 </Text>
               ) : null}
             </View>
           ) : (
-            <TouchableOpacity
-              style={[styles.check, done && styles.checkDone]}
+            <TapScale
               onPress={handleCheckToggle}
-              activeOpacity={0.7}
+              haptic={done ? 'selection' : 'success'}
+              scaleTo={0.85}
             >
-              {done ? <Check size={14} color={colors.bg} strokeWidth={2.5} /> : null}
-            </TouchableOpacity>
+              <Animated.View style={[styles.check, done && styles.checkDone, checkAnimated]}>
+                {done ? <Check size={14} color={colors.bg} strokeWidth={2.5} /> : null}
+              </Animated.View>
+            </TapScale>
           )}
         </View>
       </View>
@@ -127,7 +149,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   inputDone: {
-    color: colors.text,
+    color: colors.accent,
   },
   check: {
     width: 28,
@@ -139,7 +161,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   checkDone: {
-    backgroundColor: colors.text,
-    borderColor: colors.text,
+    backgroundColor: colors.accent,
+    borderColor: colors.accent,
   },
 });

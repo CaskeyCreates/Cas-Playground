@@ -38,7 +38,7 @@ export const RankListRow = ({ rank, levelRange, state }: Props) => (
         </Text>
       </View>
       {state === 'current' ? (
-        <Text variant="nano" tone="default" uppercase weight="bold">
+        <Text variant="nano" tone="accent" uppercase weight="bold">
           You
         </Text>
       ) : null}
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: colors.text,
+    backgroundColor: colors.accent,
   },
   info: { flex: 1 },
 });
